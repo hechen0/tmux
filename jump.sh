@@ -1,17 +1,23 @@
 #!/bin/sh
 
-MODULE=$@
-if [ -z "$MODULE" ]
-then
-    echo "Usage: jump module.api.com"
-    exit 1
-fi
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-IPS="$($DIR/getip.sh $MODULE)"
-IP_COUNTS=$(echo -n "$IPS" | grep -c '^')
+MODULE=$@
 
 source $DIR/secrets
+
+if [ -z "$MODULE" ]
+then
+    tmux new-window
+    tmux send "$SSHCMD" Enter
+    sleep 2
+    PWD=`$PWDCMD`
+    tmux send $PWD Enter
+    tmux send s Enter
+    exit 0
+fi
+
+IPS="$($DIR/getip.sh $MODULE)"
+IP_COUNTS=$(echo -n "$IPS" | grep -c '^')
 
 # create new window
 tmux new-window
